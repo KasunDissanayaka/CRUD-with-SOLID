@@ -2,24 +2,42 @@
 namespace App\Repositories;
 
 use App\Models\Order;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use App\Services\OrderApiService;
+use Illuminate\Database\DatabaseManager;
 
 class OrderRepository implements OrderRepositoryInterface
 {
+    protected $orderApiService;
+    protected $db;
+
+    public function __construct(OrderApiService $orderApiService, DatabaseManager $db)
+    {
+        $this->orderApiService = $orderApiService;
+        $this->db = $db;
+    }
+
     public function createOrder(array $data)
     {
-        $data['process_id'] = rand(1, 10);
-        $order = Order::create($data);
-        $response = Http::post('https://wibip.free.beeceptor.com/order', [
-            'Order_ID' => $order->id,
-            'Customer_Name' => $order->customer_name,
-            'Order_Value' => $order->order_value,
-            'Order_Date' => $order->created_at->format('Y-m-d H:i:s'),
-            'Order_Status' => $order->order_status,
-            'Process_ID' => $order->process_id
-        ]);
-    
-        return $order;
+        try {
+            return $this->db->transaction(function () use ($data) {
+
+                $data['process_id'] = rand(1, 10);
+                $order = Order::create($data);
+                $apiResponse = $this->orderApiService->sendOrderDetails($order);
+                return [
+                    'order' => $order,
+                    'apiResponse' => $apiResponse,
+                ];
+
+            });
+
+        } catch (\Exception $e) {
+
+            Log::error('Error creating order', ['error' => $e->getMessage()]);
+            throw $e;
+            
+        }
     }
 }
+
