@@ -20,9 +20,8 @@ class OrderApiService
             ]);
 
             if ($response->failed()) {
-                dd($response->body());
                 Log::error('Failed to send order details to the external API', ['response' => $response->body()]);
-                throw new \Exception('External API communication failed');
+                throw new \Exception('External API communication failed - '. $response->body());
             }
 
             return $response;
