@@ -4,8 +4,9 @@ namespace App\Services;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\Order;
+use App\Http\Controllers\BaseController as BaseController;
 
-class OrderApiService
+class OrderApiService extends BaseController
 {
     public function sendOrderDetails(Order $order)
     {

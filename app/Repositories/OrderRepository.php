@@ -1,6 +1,7 @@
 <?php
 namespace App\Repositories;
 
+use App\Jobs\SendOrderDetails;
 use App\Models\Order;
 use App\Services\OrderApiService;
 use Illuminate\Database\DatabaseManager;
@@ -24,10 +25,11 @@ class OrderRepository implements OrderRepositoryInterface
 
                 $data['process_id'] = rand(1, 10);
                 $order = Order::create($data);
-                $apiResponse = $this->orderApiService->sendOrderDetails($order);
+                //$apiResponse = $this->orderApiService->sendOrderDetails($order);
+                SendOrderDetails::dispatch($order)->onQueue('orders');
                 return [
                     'order' => $order,
-                    'apiResponse' => $apiResponse,
+                    'apiResponse' => 'Order is created and queued',
                 ];
 
             });
