@@ -2,9 +2,9 @@
 namespace App\Repositories;
 
 use App\Models\Order;
-use Illuminate\Support\Facades\Log;
 use App\Services\OrderApiService;
 use Illuminate\Database\DatabaseManager;
+use Illuminate\Support\Facades\Log;
 
 class OrderRepository implements OrderRepositoryInterface
 {

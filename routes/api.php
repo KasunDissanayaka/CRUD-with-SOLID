@@ -15,4 +15,4 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/orders', [OrderController::class, 'create'])->middleware('auth:sanctum');
+Route::post('order/create', [OrderController::class, 'create'])->middleware('auth:sanctum');
