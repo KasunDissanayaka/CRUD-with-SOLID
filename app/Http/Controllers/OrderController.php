@@ -5,8 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Repositories\OrderRepositoryInterface;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Controllers\BaseController as BaseController;
 
-class OrderController extends Controller
+class OrderController extends BaseController
 {
     protected $orderRepository;
 
@@ -23,16 +24,18 @@ class OrderController extends Controller
         ]);
 
         if ($validator->fails()) {
-            return response()->json(['errors' => $validator->errors()], 400);
+            // return response()->json(['errors' => $validator->errors()], 400);
+            return $this->sendError(['error'=>$validator->errors()]);
         }
 
         $order = $this->orderRepository->createOrder($request->all());
 
-        return response()->json([
-            'order_id' => $order->id,
-            'process_id' => $order->process_id,
-            'status' => 'Order Created'
-        ], 201);
+        return $this->sendResponse($order, 'Order Created successfully.');
+        // return response()->json([
+        //     'order_id' => $order->id,
+        //     'process_id' => $order->process_id,
+        //     'status' => 'Order Created'
+        // ], 201);
     }
 }
 
